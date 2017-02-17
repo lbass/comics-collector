@@ -16,21 +16,14 @@
 	<context:component-scan base-package="com.lbass">
 		<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
 	</context:component-scan>
-    
-   	<task:scheduler id="jobScheduler" pool-size="10" />
-	<task:annotation-driven scheduler="jobScheduler" /> 
-    
-    <bean id="appProps" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+	<task:scheduler id="jobScheduler" pool-size="10" />
+	<task:annotation-driven scheduler="jobScheduler" />
+
+	<bean id="appProps" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location" value="classpath:/config.properties" />
 	</bean>
-    
-	<util:properties id="config">
-		<prop key="system.es.user">lbass</prop>
-		<prop key="system.es.password">lbass81</prop>
-		<prop key="system.file.storePath">/Users/dowonkim/Desktop/comics/</prop>
-		<prop key="system.manastaynight.mainUri">http://manastaynight09.blogspot.kr/</prop>	
-	</util:properties>
-
+	
 	<bean id="esClientFactory" class="com.lbass.common.esclient.ESClientFactory" init-method="init">
 		<property name="clientFactory" ref="jestClientFactory"/>
 	</bean>

@@ -12,9 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.lbass.manastaynight.crawler.impl.ChapterCrawler;
+import com.lbass.manastaynight.dto.ChapterBean;
 import com.lbass.manastaynight.exception.NotUpdateException;
-import com.lbass.manastaynight.vo.ChapterBean;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:application-context.xml","classpath:dispatcher-servlet.xml"})
@@ -29,9 +28,8 @@ public class ChpaterCrawlerTest {
 	public void crawlingTest() throws URISyntaxException {
 		try {
 			ChapterCrawler crawler = new ChapterCrawler();
-			ChapterBean bean = new ChapterBean(new URI(""), "");
-			crawler.runCrawling(bean);
-
+			ChapterBean chapterBean = crawler.runCrawling("http://manastaynight09.blogspot.com/2017/01/18_29.html");
+			logger.debug(chapterBean.toString());
 			assertTrue(true);			
 		} catch(NotUpdateException e) {
 			logger.error("Not update page");

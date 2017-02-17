@@ -1,36 +1,24 @@
-package com.lbass.manastaynight.crawler;
-
-import java.util.List;
+package com.lbass.manastaynight.service;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lbass.manastaynight.crawler.impl.ChapterCrawler;
-import com.lbass.manastaynight.crawler.impl.MainCrawler;
-import com.lbass.manastaynight.vo.ChapterBean;
-import com.lbass.manastaynight.vo.MainColletingBean;
+import com.lbass.core.TestCore;
+import com.lbass.manastaynight.service.CollectService;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:application-context.xml","classpath:dispatcher-servlet.xml"})
-public class ComicsCollectTest {
+public class CollectServiceTest extends TestCore {
 
-	private static Logger logger = LoggerFactory.getLogger(ComicsCollectTest.class);
+	private static Logger logger = LoggerFactory.getLogger(CollectServiceTest.class);
 	
+	@Autowired
+	private CollectService service;
 	
+
 	@Test
 	public void collecyTest() {
-		MainCrawler mainCrawler = new MainCrawler();
-		ChapterCrawler chapterCrawler = new ChapterCrawler();			
-		MainColletingBean mainColletingBean = (MainColletingBean)mainCrawler.runCrawling();
-		List<ChapterBean> collectData = mainColletingBean.getChapterBeans();
-		
-		for(ChapterBean bean : collectData) {
-			chapterCrawler.runCrawling(bean);
-		}
-		
+		service.collectCoimcs();
+		//수집한 내역을 지우는 모듈 기능이 필요함 - 수집 때마다 식별 값이 필요 할 듯 하다.
 	}
 }

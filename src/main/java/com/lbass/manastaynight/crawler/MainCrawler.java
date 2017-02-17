@@ -1,4 +1,4 @@
-package com.lbass.manastaynight.crawler.impl;
+package com.lbass.manastaynight.crawler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,67 +15,52 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.lbass.manastaynight.config.AppConfig;
-import com.lbass.manastaynight.config.AppConfig.AppConfigEnum;
-import com.lbass.manastaynight.crawler.Crawler;
-import com.lbass.manastaynight.util.Utils;
-import com.lbass.manastaynight.vo.ChapterBean;
-import com.lbass.manastaynight.vo.MainColletingBean;
+import com.lbass.common.utils.Utils;
 
 
 //메인 최신 500개 업데이트 수 
 @Component("MainCrawler")
-public class MainCrawler implements Crawler<MainColletingBean> {
+public class MainCrawler {
 	private static Logger logger = LoggerFactory.getLogger(MainCrawler.class);
-	private final static String DEFAULT_URL = "http://manastaynight09.blogspot.kr/";
 	
-	@Override
-	public MainColletingBean runCrawling() {
-		MainColletingBean bean = new MainColletingBean();
-		String startDate = Utils.getCurrentData();
-		logger.debug(" Start Date : " + startDate);
-		bean.setCollecDate(startDate);
-
+	@Value("${msn.main.uri}")
+	private String MANASTAYNIGHT_MAIN_URI;
+	
+	public List<String> runCrawling() {
+		
 		WebDriver driver = new SafariDriver();
 		String dom = null;
-		try {
-			driver.get(AppConfig.getPropertyValue(AppConfigEnum.DEFAULT_URL));
-			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-			driver.findElement(By.tagName("ul").className("rpw"));
+		
+		driver.get(MANASTAYNIGHT_MAIN_URI);
+		
+//case 1: 보안페이지 표시 시
+//		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//		WebElement button = driver.findElement(By.className("maia-button maia-button-primary"));
+//		String realURI = button.getAttribute("href");
+//		driver.get(realURI);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.findElement(By.tagName("ul").className("rpw"));		
+		dom = driver.getPageSource();
+		driver.quit();
 
-			dom = driver.getPageSource();
-		} catch (Exception e) {
-		} finally {
-			driver.quit();
-		}
-
-		List<ChapterBean> updateList = new ArrayList<ChapterBean>();
+		List<String> updateList = new ArrayList<String>();
 		Document doc = Jsoup.parse(dom);
 		Element rpwElement = doc.getElementsByClass("rpw").first();
 		Elements links = rpwElement.select("a[href]");
+
 		for (Element link : links) {
 			String aHref = link.attr("href");
-			String comicChaterName = Utils.stringReplace(link.tagName("strong").text());
+			//String comicChaterName = Utils.stringReplace(link.tagName("strong").text());
 
-			logger.debug(aHref);
-			logger.debug(comicChaterName);
+			String chaterURI = null;
+			chaterURI = aHref;
 			
-			ChapterBean chapterBean = null;
-			try {
-				URI chaterURI = new URI(aHref);
-				chapterBean = new ChapterBean(chaterURI, comicChaterName);
-			} catch (URISyntaxException e) {
-				String errorMessage = "[" + aHref + "] is not correct";
-				logger.error("[" + aHref + "] is not correct");
-				chapterBean = new ChapterBean(comicChaterName, true, errorMessage);
-			}
-			updateList.add(chapterBean);				
+			updateList.add(chaterURI);				
 		}
-		bean.setChapterBeans(updateList);
-		logger.debug(" End Date : " + Utils.getCurrentData());
-		return bean;
+		return updateList;
 	}
 	
 }
