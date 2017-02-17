@@ -1,7 +1,5 @@
 package com.lbass.manastaynight.crawler;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -18,11 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.lbass.common.utils.Utils;
-
 
 //메인 최신 500개 업데이트 수 
-@Component("MainCrawler")
+@Component("mainCrawler")
 public class MainCrawler {
 	private static Logger logger = LoggerFactory.getLogger(MainCrawler.class);
 	
